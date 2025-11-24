@@ -1,0 +1,6 @@
+ingest:
+  input_dir: "data/raw"
+  processed_out: "data/processed/segments.jsonl"
+  min_section_chars: 700
+  max_section_chars: 1300
+  overlap_chars: 120
