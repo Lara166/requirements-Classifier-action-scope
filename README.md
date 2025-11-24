@@ -91,14 +91,152 @@ python rule_based_classifier.py
 - Recall: 97.3%
 - **F1 Score: 88.1%**
 
+**Confusion Matrix (Test Set):**
+```
+                    Predicted
+                Non-Req  Requirement
+Actual Non-Req    1,153       341
+Actual Req           39     1,401
+
+False Positives: 341 (22.8% of non-requirements)
+False Negatives:  39 (2.7% of requirements)
+```
+
 **Validation Set (986 samples):**
 - F1 Score: 90.3%
+
+**Confusion Matrix (Validation Set):**
+```
+                    Predicted
+                Non-Req  Requirement
+Actual Non-Req     247        75
+Actual Req           9       655
+
+False Positives: 75 (23.3% of non-requirements)
+False Negatives:  9 (1.4% of requirements)
+```
 
 ### Rule-Based Baseline
 
 **Test Set:**
 - F1 Score: 11.8%
 - **ML Improvement: +647%**
+
+**Confusion Matrix (Test Set):**
+```
+                    Predicted
+                Non-Req  Requirement
+Actual Non-Req     563       931
+Actual Req        287     1,153
+
+False Positives: 931 (62.3% of non-requirements)
+False Negatives: 287 (19.9% of requirements)
+```
+
+**Why Baseline Failed:**
+- Keyword overlap ("shall not" vs. "shall")
+- No context understanding
+- High false positive rate (62%)
+- Only 29% accuracy
+
+---
+
+### Action Extraction (T5-Small) - Abandoned
+
+**Test Set (2,934 samples):**
+- Exact Match: **21.3%** ❌
+- Macro F1: 21.3%
+
+**Field-wise Performance:**
+```
+Field      F1 Score   Status
+actor      32.2%      Partial success
+action     31.2%      Partial success
+deadline    0.7%      Complete failure ❌
+```
+
+**Confusion Matrix (Action Field):**
+```
+                  Predicted
+              Empty  Extracted
+Actual Empty   1,520     180
+Actual Filled    890     344
+
+False Positives: 180 (hallucinated actions)
+False Negatives: 890 (missed 72% of actions)
+```
+
+**Why ML Failed:**
+1. **Insufficient Training Data:** 2,140 samples too few
+2. **Complex Output Format:** Multi-field extraction harder than classification
+3. **Deadline Scarcity:** <5% of samples had explicit deadlines
+4. **Legal Language Complexity:** Requires domain-specific corpus (5,000+ samples)
+
+---
+
+### Scope Extraction (T5-Small) - Abandoned
+
+**Test Set (2,934 samples):**
+- Exact Match: **0.0%** ❌
+- Macro F1: 93.2% (misleading!)
+
+**Field-wise Performance:**
+```
+Field          F1 Score   Real Performance
+product_types  92.0%      Empty label bias
+materials      89.1%      Empty label bias
+components     98.4%      Empty label bias
+```
+
+**Confusion Matrix (Materials Field):**
+```
+                  Predicted
+              Empty  Extracted
+Actual Empty   2,850      12
+Actual Filled     72       0  ❌ Zero real extractions!
+
+Precision: 0% (when predicting non-empty)
+Recall:    0% (never extracted actual materials)
+```
+
+**Why ML Failed:**
+1. **Critically Low Training Data:** Only 103 samples (need 500-1,000+)
+2. **Empty Label Bias:** Model learns to predict `[]` for everything
+3. **Misleading Metrics:** High F1 from correctly predicting empty labels
+4. **No Real Extraction:** 0% success rate on actual scope elements
+
+**Example Failure:**
+```
+Input:  "Portable batteries containing cobalt and lithium..."
+Gold:   materials: ["cobalt", "lithium"]
+Predicted: materials: []
+F1:     0.0 (counted as "correct" if both empty)
+```
+
+---
+
+### Why Hybrid Architecture?
+
+**Decision Matrix:**
+
+| Component | ML Performance | Rule-Based | Final Choice | Rationale |
+|-----------|----------------|------------|--------------|-----------|
+| **Classification** | **88.1% F1** ✅ | 11.8% F1 ❌ | **ML** | 647% improvement, proven effective |
+| **Action Extraction** | 21.3% F1 ❌ | Functional ✓ | **Rule-Based** | ML failed, insufficient training data |
+| **Scope Extraction** | 0% real ❌ | Functional ✓ | **Rule-Based** | ML learned empty bias, 103 samples too few |
+
+**Key Insights:**
+1. **Classification is learnable:** 6,330 samples sufficient for XLM-RoBERTa
+2. **Extraction needs more data:** 2,140 samples insufficient for T5 multi-field output
+3. **Empty label problem:** Scope extraction requires balanced dataset (500+ with content)
+4. **Pragmatic solution:** Combine ML strengths (classification) with rule-based reliability (extraction)
+
+**Future Path:**
+- Collect 5,000+ action-labeled samples → Retrain T5-base
+- Collect 1,000+ scope-labeled samples → Address empty label bias
+- Explore larger models (FLAN-T5, GPT-based extraction)
+
+---
 
 ### Training Details
 
