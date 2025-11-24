@@ -171,10 +171,46 @@ Structured JSON Output (outputs/*.json)
 | Test | 2,934 | 1,440 (49.1%) | 1,494 (50.9%) |
 | **Total** | **6,330** | **3,731** | **2,599** |
 
-**Sources:**
-- Battery Regulation (EU) 2023/1542
-- REACH Regulation (EC) 1907/2006
-- RoHS Directive 2011/65/EU
+### Regulations Processed
+
+**EU Regulations (18 documents, EN/DE):**
+
+| Regulation | CELEX Number | Year | Split |
+|------------|--------------|------|-------|
+| Battery Regulation | 32023R1542 | 2023 | Validation |
+| CBAM (Carbon Border Adjustment) | 32023R0956 | 2023 | Validation |
+| CSDDD (Due Diligence Directive) | 32024L1760 | 2024 | Train |
+| CSRD (Sustainability Reporting) | 32022L2464 | 2022 | Train |
+| Conflict Minerals Regulation | 32017R0821 | 2017 | Train |
+| Energy Efficiency Directive | 32023L1791 | 2023 | Train |
+| EU Taxonomy Regulation | 32020R0852 | 2020 | Train/Test |
+| EU Taxonomy Climate Delegated Act | 32021R2139 | 2021 | Test |
+| NFRD (Non-Financial Reporting) | 32014L0095 | 2014 | Test |
+| Renewable Energy Directive | 32018L2001 | 2018 | Train/Test |
+| SFDR (Sustainable Finance) | 32019R2088 | 2019 | Test |
+| Single-Use Plastics Directive | 32019L0904 | 2019 | Train/Validation |
+| Waste Framework Directive | 32008L0098 | 2008 | Train/Validation |
+| WEEE Directive | 32012L0019 | 2012 | Test |
+
+**German Laws (11 documents, DE):**
+
+| Law | Abbreviation | Year | Split |
+|-----|--------------|------|-------|
+| Batteriegesetz | BattG | 2009 | Validation |
+| Brennstoffemissionshandelsgesetz | BEHG | 2019 | Test |
+| Bundes-Immissionsschutzgesetz | BImSchG | 2021 | Train |
+| Bundes-Klimaschutzgesetz | KSG | 2019 | Train |
+| Chemikaliengesetz | ChemG | 2008 | Test |
+| CSR-Richtlinie-Umsetzungsgesetz | CSR-RUG | 2017 | Test |
+| Elektro- und Elektronikgerätegesetz | ElektroG | 2015 | Test |
+| Gebäudeenergiegesetz | GEG | 2020 | Train |
+| Kreislaufwirtschaftsgesetz | KrWG | 2012 | Train |
+| Lieferkettensorgfaltspflichtengesetz | LkSG | 2021 | Train |
+| Verpackungsgesetz | VerpackG | 2017 | Train |
+
+**Total:** 29 PDF files (18 EU + 11 German)  
+**Languages:** English (EN), German (DE)  
+**Domains:** Sustainability, Due Diligence, Energy, Circular Economy, Climate, Finance
 
 ---
 
