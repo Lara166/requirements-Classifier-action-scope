@@ -24,6 +24,7 @@ This project implements a **hybrid ML/rule-based pipeline** for extracting struc
 sa2_v2/
 ├── README.md                          # This file
 ├── THESIS_RESULTS.md                  # Detailed metrics & analysis
+├── PIPELINE_DETAILS.md                # Step-by-step pipeline explanation
 ├── ingest.py                          # Main data ingestion
 ├── hybrid_pipeline.py                 # End-to-end ML pipeline
 ├── rule_based_classifier.py           # Baseline classifier
@@ -110,25 +111,54 @@ python rule_based_classifier.py
 
 ## 🏗️ Architecture
 
+For detailed step-by-step explanation with examples, see **[PIPELINE_DETAILS.md](PIPELINE_DETAILS.md)**.
+
 ```
 PDF Input (data/raw/*.pdf)
   ↓
 Ingestion & Chunking (ingest.py)
+  • Intelligent segmentation (500-2000 chars)
+  • Paragraph/sentence boundary detection
+  • Metadata extraction (article #, type, language)
   ↓
 JSONL Segments (data/processed/segments.jsonl)
+  • 6,330 labeled segments
+  • Fields: text, doc_id, article_number, structure_type
   ↓
-ML Classifier (XLM-RoBERTa)
+ML Classifier (XLM-RoBERTa-Large)
   models/requirement_classifier/
+  • Binary: requirement_undertaking / non_requirement
+  • Input: 512 tokens max
+  • Output: class + confidence (0-1)
   ├─→ Non-Requirement → Skip
   └─→ Requirement → Extract
             ↓
 Rule-Based Extraction
   src/requirement_extractor.py
-  ├─→ Action (actor, action, deadline)
-  └─→ Scope (products, materials, components)
+  ├─→ Action Labels
+  │   • Actor: "manufacturer", "commission"
+  │   • Action: "ensure", "provide", "submit"
+  │   • Deadline: "by 1 Jan 2025", "within 6 months"
+  │   • References: "Article 7", "Annex III"
+  │
+  └─→ Scope Labels
+      • Product Types: "portable battery", "industrial battery"
+      • Materials: "lithium", "cobalt", "mercury"
+      • Thresholds: ">2 kWh", "≥89%", "<0.002%"
+      • Components: "BMS", "cathode", "electrolyte"
             ↓
 Structured JSON Output (outputs/*.json)
+  • Complete requirement object
+  • Classification + extraction results
+  • Confidence scores + metadata
 ```
+
+**Key Processing Steps:**
+
+1. **Segmentation:** 500-2000 char chunks with 200-char overlap
+2. **Labeling Keywords:** `shall`, `must`, `muss`, `verpflichtet` (EN/DE)
+3. **Classification:** 88.1% F1, 97.3% recall (critical for compliance)
+4. **Extraction:** Pattern matching for 20+ action/scope fields
 
 ---
 
