@@ -111,19 +111,23 @@ python rule_based_classifier.py
 ## 🏗️ Architecture
 
 ```
-PDF Input
+PDF Input (data/raw/*.pdf)
   ↓
-Ingestion & Chunking
+Ingestion & Chunking (ingest.py)
+  ↓
+JSONL Segments (data/processed/segments.jsonl)
   ↓
 ML Classifier (XLM-RoBERTa)
+  models/requirement_classifier/
   ├─→ Non-Requirement → Skip
   └─→ Requirement → Extract
             ↓
 Rule-Based Extraction
+  src/requirement_extractor.py
   ├─→ Action (actor, action, deadline)
   └─→ Scope (products, materials, components)
             ↓
-Structured JSON Output
+Structured JSON Output (outputs/*.json)
 ```
 
 ---
